@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping SYSTEM
+			"http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+<hibernate-mapping package="org.as.hbsamples.vo">
+	<class name="Employee" table="hb_emp_tbl" lazy="false">
+
+		<!-- Common id property. -->
+		<id name="empNo" type="int" unsaved-value="null"
+			column="EMPNo">
+			<generator class="assigned" />
+		</id>
+
+		<!-- Name of the item is immutable. -->
+		<property name="empName" type="string" column="ENAME"
+			length="10" not-null="true" />
+
+		<property name="empJob" type="string" column="JOB" length="9"
+			not-null="true" />
+
+		<property name="empMgr" type="int" column="MGR" length="4"
+			not-null="true" />
+
+		<property name="empHireDate" column="HIREDATE"
+			type="java.util.Date" update="true" not-null="false" />
+
+		<property name="empSal" type="double" column="SAL" length="10"
+			not-null="true" />
+
+		<property name="empComm" type="double" column="COMM"
+			length="20" not-null="false"/>
+			
+		<many-to-one name="empDept" class="Department" cascade="none"
+			column="deptno" not-null="true" outer-join="false"
+			foreign-key="FK_EMP_DEPT" />
+	</class>
+
+	<query name="empsalquery">
+		<![CDATA[
+	select e from Employee e where e.empSal > :salValue
+]]>
+	</query>
+
+
+</hibernate-mapping>

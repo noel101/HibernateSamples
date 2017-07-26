@@ -1,0 +1,81 @@
+<!--
+
+  CavetEmptor ANT build script.
+
+-->
+
+<project name="HibernateProject" default="createthejar" basedir=".">
+
+
+	<!-- Name of project and version, used to create filenames. -->
+	<property name="name.project"   value="HibernateProject"/>
+	<property name="name.short"     value="Hibernateproject"/>
+	<property name="project.author" value="Rahul"/>
+	<property name="version"        value="0.9"/>
+
+	<!-- Global properties for this build. -->
+	<property name="src.java.dir"   value="src/main/java"/>
+	<property name="lib.dir"        value="lib"/>
+	<property name="build.dir"      value="build"/>
+	<property name="classes.dir"    value="${build.dir}/standalone"/>
+	<property name="test.out.dir"   value="testout"/>
+
+
+	<!-- Classpath declaration. -->
+	<path id="lib.class.path">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
+	<patternset id="meta.files">
+		<include name="**/*.xml"/>
+		<include name="**/*.properties"/>
+	</patternset>
+
+	<!-- Tasks -->
+	<taskdef name="schemaexport" classname="net.sf.hibernate.tool.hbm2ddl.SchemaExportTask">
+		<classpath refid="lib.class.path"/>
+		<classpath path="${classes.dir}"/>
+	</taskdef>
+
+	
+	
+	<!-- Targets -->
+
+	<target name="clean" description="Cleans up build and dist directories">
+		<delete dir="${build.dir}"/>
+		<delete dir="${test.out.dir}"/>
+	</target>
+
+	<target name="compile" depends="clean" description="Compile the classes">
+		<mkdir dir="${classes.dir}"/>
+		<javac
+			srcdir="${src.java.dir}"
+			destdir="${classes.dir}"
+			nowarn="on">
+			<classpath refid="lib.class.path"/>
+		</javac>
+
+		<!-- Copy over the mapping files -->
+		<copy todir="${classes.dir}">
+			<fileset dir="${src.java.dir}">
+				<patternset refid="meta.files"/>
+			</fileset>
+		</copy>
+	</target>
+	<target name="createthejar" depends="compile" description="createthejarfile">
+	  <jar destfile="${build.dir}/hibernatesamples.jar"
+	       basedir="${build.dir}/standalone"
+	       includes="org/**"
+	       excludes="**/Test.class"
+	  />
+	</target>
+	<target name="exportddl"  depends="" description="Export the DDL to caveatemptor.ddl">
+		<schemaexport   config="${classes.dir}/hibernate.cfg.xml"
+						quiet="yes"
+						text="yes"
+						output="${basedir}/justnowcreated.ddl"
+						delimiter=";"/>
+	</target>
+</project>
